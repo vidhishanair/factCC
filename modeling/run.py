@@ -208,10 +208,11 @@ def evaluate(args, model, tokenizer, prefix=""):
     # Loop to handle MNLI double evaluation (matched, mis-matched)
     eval_task_names = (args.task_name,)
     eval_outputs_dirs = (args.output_dir,)
+    eval_preds_dirs = (args.pred_dir,)
 
     results = {}
     cnt = 0
-    for eval_task, eval_output_dir in zip(eval_task_names, eval_outputs_dirs):
+    for eval_task, eval_output_dir, eval_pred_dir in zip(eval_task_names, eval_outputs_dirs, eval_preds_dirs):
         eval_dataset = load_and_cache_examples(args, eval_task, tokenizer, evaluate=True)
 
         if not os.path.exists(eval_output_dir) and args.local_rank in [-1, 0]:
@@ -260,14 +261,14 @@ def evaluate(args, model, tokenizer, prefix=""):
         result["loss"] = eval_loss
         results.update(result)
 
-        output_eval_file = os.path.join(eval_output_dir, "eval_results.txt")
+        output_eval_file = os.path.join(eval_pred_dir, "eval_results.txt")
         with open(output_eval_file, "w") as writer:
             logger.info("***** Eval results {} *****".format(prefix))
             for key in sorted(results.keys()):
                 logger.info("  %s = %s", key, str(result[key]))
                 writer.write("%s = %s\n" % (key, str(result[key])))
 
-        output_eval_file = os.path.join(eval_output_dir, "eval_predictions.txt")
+        output_eval_file = os.path.join(eval_pred_dir, "eval_predictions.txt")
         logger.info("***** Writing Predictions to File *****")
         with open(output_eval_file, "w") as writer:
             for pred_idx, pred in enumerate(preds):
@@ -346,7 +347,9 @@ def main():
     parser.add_argument("--task_name", default=None, type=str, required=True,
                         help="The name of the task to train selected in the list: " + ", ".join(processors.keys()))
     parser.add_argument("--output_dir", default=None, type=str, required=True,
-                        help="The output directory where the model predictions and checkpoints will be written.")
+                        help="The output directory where the model checkpoints will be written.")
+    parser.add_argument("--pred_dir", default=None, type=str, required=True,
+                        help="The output directory where the model predictions will be written.")
     parser.add_argument("--train_from_scratch", action='store_true',
 			help="Whether to run training without loading pretrained weights.")
 

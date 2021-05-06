@@ -20,4 +20,5 @@ python3 $CODE_PATH/run.py \
   --model_type bert \
   --model_name_or_path $MODEL_NAME \
   --data_dir $DATA_PATH \
-  --output_dir $CKPT_PATH
+  --output_dir $CKPT_PATH \
+  --pred_dir $CKPT_PATH
