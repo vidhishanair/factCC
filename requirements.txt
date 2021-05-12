@@ -8,3 +8,4 @@ apex==0.9.10dev
 protobuf==3.11.2
 scikit_learn==0.22.1
 google-cloud-translate==1.6.0
+wandb
